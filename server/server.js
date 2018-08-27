@@ -26,6 +26,19 @@ app.get('/todos', (req, res)=>{
     })
 })
 
+app.get('/todos/:id', (req, res) => {
+    var id = req.params.id;
+    Todo.findById(id).then((todo) => {
+        if(!todo) {
+            res.status(400).send({message: 'id npt found'})
+        } else {
+            res.send({todo})
+        }
+    }, (e) => {
+        res.status(400).send(e);
+    })
+})
+
 app.listen(3000, () => {
     console.log('server is up');
 })
