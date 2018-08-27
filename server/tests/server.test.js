@@ -2,13 +2,18 @@ const expect = require('expect')
 const request = require('supertest')
 const {app} = require('../server.js')
 const {Todo} = require('../models/todo.js')
+const {ObjectID} = require('mongodb');
+
 const todos = [ {
+    _id: new ObjectID(),
     text: 'Seed Data 1'
 },
 {
+    _id: new ObjectID(),
     text: 'Seed Data 2'
 },
 {
+    _id: new ObjectID(),
     text: 'Seed Data 3'
 }]
 beforeEach((done) => {
@@ -53,7 +58,25 @@ describe('GET /todos', () => {
     it('should get a list of all todos', (done) => {
         request(app)
         .get('/todos').expect(200).expect((res) => {
-                expect(res.body.todos.length).toBe(4)
-        }).end(done())
+                expect(res.body.todos.length).toBe(3)
+        }).end(done)
+    })
+})
+
+describe(`GET /todos/:id`, () => {
+    it('should return to do properly', (done) => {
+        request(app).
+        get(`/todos/${todos[0]._id.toHexString()}`)
+        .expect(200).expect((res) => {
+            expect(res.body.todo.text).toBe(todos[0].text);
+        }).end(done);
+    })
+    it('shoudl return a 404 if object id is not found', (done) => {
+        request(app).get(`/todos/${new ObjectID().toHexString}`)
+        .expect(404).end(done)
+    })
+    it('shoudl return a 404 if object id is invalid', (done) => {
+        request(app).get(`/todos/12sdsad}`)
+        .expect(404).end(done)
     })
 })
