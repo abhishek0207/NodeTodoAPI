@@ -16,6 +16,11 @@ const todos = [ {
     _id: new ObjectID(),
     text: 'Seed Data 3'
 }]
+
+const updateTodo = {
+    text: 'hi i came from testing',
+    completed: true
+}
 beforeEach((done) => {
     Todo.remove({
     }).then(() =>  
@@ -110,4 +115,15 @@ describe('DELETE /todo', () => {
         .expect(400).end(done)
     })
 
+})
+
+describe('PATCH /todo/id', () => {
+    it('should update the post on the basis of id provided', (done) => {
+        var toUpdate = todos[0];
+        var id = toUpdate._id.toHexString();
+        request(app).patch(`/todos/${id}`).send(updateTodo).expect(200)
+        .expect((res) => {
+            expect(res.body.todo.text).toBe(updateTodo.text)
+        }).end(done)
+    })
 })
